@@ -40,7 +40,8 @@ pip-delete-this-directory.txt
 
 # Project specific
 output/
-*.mp4
+# Video files excluded - keep input.mp4 but ignore generated videos
+# *.mp4  # Commented out to allow pushing input video
 *.avi
 *.mov
 *.flv
