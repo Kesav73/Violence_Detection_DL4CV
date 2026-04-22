@@ -1,0 +1,7 @@
+# Put a real video file directly into this folder,
+# or write its path below.
+#
+# Examples:
+# ./input.mp4
+# ../hospital.mp4
+
