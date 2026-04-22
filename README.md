@@ -4,12 +4,16 @@ This repository contains a refactored local violence-detection workflow. It keep
 
 ## Included Files
 
-- `rwf2000_training_vgg19_lstm_pytorch.ipynb`
-  - trains the violence classifier on the `RWF-2000` dataset with PyTorch
-- `violence_model.py`
-  - shared PyTorch model architecture and model-loading utilities
-- `detect_violence.py`
-  - reads a local video, runs sliding-window inference, saves an annotated output video, and stores detected time ranges
+- `main.py`
+  - main entry point for violence detection inference
+- `src/models/violence_detection.py`
+  - PyTorch model architecture (VGG19 + LSTM) and utilities
+- `src/inference/detect.py`
+  - video processing, sliding-window inference, and output generation
+- `notebooks/`
+  - Jupyter notebooks for training on RWF-2000 dataset with PyTorch
+- `artifacts/best_vgg19_lstm_kaggle.pt`
+  - pre-trained model checkpoint
 
 ## Input Workflow
 
@@ -33,21 +37,32 @@ Running the detector creates:
 
 ## Example Run
 
-Run the detector after you have a trained model:
-
+1. **Install dependencies:**
 ```bash
-python3 detect_violence.py --model-path artifacts/rwf2000_vgg19_lstm.pt
+pip install -r requirements.txt
 ```
 
-If you saved the best checkpoint instead, you can point to that file:
+2. **Prepare input:**
+   - Place a video file in `input/` directory, OR
+   - Specify the path in `input/input.txt`
 
+3. **Run detection:**
 ```bash
-python3 detect_violence.py --model-path artifacts/best_vgg19_lstm.pt
+python main.py
 ```
+
+The script will automatically:
+- ✅ Detect and use GPU (CUDA) if available for fast inference
+- ✅ Fall back to CPU if GPU is not available
+- ✅ Process the video and generate results in `output/`
 
 ## Notes
 
-- The model input shape must match training. If you change sequence length or image size during training, use the same values during detection.
-- The shared inference code now expects a PyTorch checkpoint, not a TensorFlow `.keras` artifact.
-- The script uses sliding-window inference, so the final output is a sequence of detected time ranges rather than bounding boxes.
-- The repository name still uses `Voilence` to match the current project naming, even though the standard spelling would be `Violence`.
+- The model is pre-trained on RWF-2000 (Real World Fighting 2000) dataset
+- **GPU acceleration:** The code automatically detects CUDA availability. For faster processing, ensure your PyTorch installation includes CUDA support:
+  ```bash
+  pip install torch torchvision --index-url https://download.pytorch.org/whl/cu118
+  ```
+- The model input shape must match training. Current config: `image_size=(160, 160)`, `sequence_length=40`
+- Sliding-window inference generates a sequence of detected violence time ranges rather than per-frame bounding boxes
+- The repository name uses `Voilence` (misspelled) to match the original project naming
